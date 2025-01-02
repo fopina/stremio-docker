@@ -7,3 +7,6 @@ serverjs:
 test:
 	docker build -t $(IMAGE):local .
 	docker run --rm -p 11470:11470 $(IMAGE):local
+
+testup: serverjs
+	docker run --rm -p 11470:11470 $(IMAGE):serverjs
