@@ -1,3 +1,7 @@
+# "fake" stage to fetch latest server.js and have dependabot keep it up to date
+# always use same platform for caching
+FROM --platform=linux/amd64 stremio/server:v4.20.10 AS serverjs
+
 # Base image
 FROM node:18-alpine3.18 AS base
 
@@ -101,7 +105,7 @@ WORKDIR /stremio
 COPY --from=ffmpeg /usr/bin/ffmpeg /usr/bin/ffprobe /usr/bin/
 COPY --from=ffmpeg /usr/lib/jellyfin-ffmpeg /usr/lib/
 
-COPY server.js ./
+COPY --from=serverjs /stremio/server.js ./
 
 ###
 # same settings as in https://github.com/Stremio/server-docker/blob/main/Dockerfile below

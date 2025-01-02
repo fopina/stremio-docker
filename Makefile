@@ -1,8 +1,8 @@
-IMAGE := ghcr.io/fopina/stremio-docker
+IMAGE := ghcr.io/fopina/stremio-server
 PATCH_VERSION := 0
 
 serverjs:
-	docker build -t $(IMAGE):serverjs -f Dockerfile.server.js .
+	docker build -t $(IMAGE):serverjs --target serverjs .
 	docker run --rm --entrypoint '' $(IMAGE):serverjs cat server.js > server.js
 
 test:
@@ -13,7 +13,10 @@ testup: serverjs
 	docker run --rm -p 11470:11470 $(IMAGE):serverjs
 
 version:
-	@cat Dockerfile.server.js | grep ^FROM | cut -d ':' -f2
+	@cat Dockerfile | grep ^FROM | grep 'stremio/server:' | cut -d ':' -f2 | cut -d ' ' -f1
 
 pversion:
 	@echo $(shell make version)-$(PATCH_VERSION)
+
+image:
+	@echo $(IMAGE)
