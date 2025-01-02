@@ -1,4 +1,4 @@
-IMAGE := ghcr.io/fopina/stremio-docker
+IMAGE := ghcr.io/fopina/stremio-server
 PATCH_VERSION := 0
 
 serverjs:
@@ -17,3 +17,6 @@ version:
 
 pversion:
 	@echo $(shell make version)-$(PATCH_VERSION)
+
+image:
+	@echo $(IMAGE)
