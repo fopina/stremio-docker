@@ -9,8 +9,9 @@ test:
 	docker build -t $(IMAGE):local --build-arg VERSION=$(shell make version) .
 	docker run --rm -p 11470:11470 $(IMAGE):local
 
-testup: serverjs
-	docker run --rm -p 11470:11470 $(IMAGE):serverjs
+testup:
+	docker build -t $(IMAGE):testup --target notused .
+	docker run --rm -p 11470:11470 $(IMAGE):testup
 
 version:
 	@cat Dockerfile | grep ^FROM | grep 'stremio/server:' | cut -d ':' -f2 | cut -d ' ' -f1
