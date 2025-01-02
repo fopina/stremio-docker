@@ -1,11 +1,18 @@
-# "fake" stage to fetch latest server.js and have dependabot keep it up to date
-# always use same platform for caching
-FROM --platform=linux/amd64 stremio/server:v4.20.11 AS serverjs
+# "fake" stage to have dependabot keep it up to date
+FROM stremio/server:v4.20.11 AS notused
 
 # Base image
 FROM node:18-alpine3.18 AS base
 
 #########################################################################
+
+# fetch server.js
+FROM base AS serverjs
+ARG VERSION
+ARG BUILD=desktop
+
+RUN apk add --no-cache curl
+RUN curl --fail -O https://dl.strem.io/server/${VERSION}/${BUILD}/server.js
 
 FROM base AS ffmpeg
 
@@ -73,39 +80,40 @@ LABEL version=${VERSION}
 WORKDIR /stremio
 
 # FIXME: official image does not install any of this, only tsaridas/stremio-docker - is it because of stremio-web?
-# # Add libs
-# RUN apk add --no-cache \
-#             libwebp \
-#             libvorbis \
-#             x265-libs \
-#             x264-libs \
-#             libass \
-#             opus \
-#             libgmpxx \
-#             lame-libs \
-#             gnutls \
-#             libvpx \
-#             libtheora \
-#             libdrm \
-#             libbluray \
-#             zimg \
-#             libdav1d \
-#             aom-libs \
-#             xvidcore \
-#             fdk-aac \
-#             libva \
-#             curl
+# Add libs
+RUN apk add --no-cache \
+            libwebp \
+            libvorbis \
+            x265-libs \
+            x264-libs \
+            libass \
+            opus \
+            libgmpxx \
+            lame-libs \
+            gnutls \
+            libvpx \
+            libtheora \
+            libdrm \
+            libbluray \
+            zimg \
+            libdav1d \
+            aom-libs \
+            xvidcore \
+            fdk-aac \
+            libva \
+            curl \
+            tini
 
-# # Add arch specific libs
-# RUN if [ "$(uname -m)" = "x86_64" ]; then \
-#   apk add --no-cache intel-media-driver; \
-#   fi
+# Add arch specific libs
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+  apk add --no-cache intel-media-driver; \
+  fi
 
 # Copy ffmpeg
 COPY --from=ffmpeg /usr/bin/ffmpeg /usr/bin/ffprobe /usr/bin/
 COPY --from=ffmpeg /usr/lib/jellyfin-ffmpeg /usr/lib/
 
-COPY --from=serverjs /stremio/server.js ./
+COPY --from=serverjs /server.js ./
 
 ###
 # same settings as in https://github.com/Stremio/server-docker/blob/main/Dockerfile below
@@ -125,4 +133,4 @@ ENV NO_CORS=
 # See: https://github.com/Stremio/server-docker/issues/7
 ENV CASTING_DISABLED=1
 
-ENTRYPOINT [ "node", "server.js" ]
+ENTRYPOINT [ "/sbin/tini", "--", "node", "server.js" ]

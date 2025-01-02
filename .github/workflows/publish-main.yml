@@ -46,6 +46,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: ${{ steps.details.outputs.image }}:latest-build-cache
           cache-to: ${{ steps.details.outputs.image }}:latest-build-cache
+          build-args:
+            VERSION=${{ steps.details.outputs.version }}
           tags: |
             ${{ steps.details.outputs.image }}:${{ steps.details.outputs.version }}
             ${{ steps.details.outputs.image }}:${{ steps.details.outputs.pversion }}

@@ -2,11 +2,11 @@ IMAGE := ghcr.io/fopina/stremio-server
 PATCH_VERSION := 0
 
 serverjs:
-	docker build -t $(IMAGE):serverjs --target serverjs .
+	docker build -t $(IMAGE):serverjs --build-arg VERSION=$(shell make version) --target serverjs .
 	docker run --rm --entrypoint '' $(IMAGE):serverjs cat server.js > server.js
 
 test:
-	docker build -t $(IMAGE):local .
+	docker build -t $(IMAGE):local --build-arg VERSION=$(shell make version) .
 	docker run --rm -p 11470:11470 $(IMAGE):local
 
 testup: serverjs

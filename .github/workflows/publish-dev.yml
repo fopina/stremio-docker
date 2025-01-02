@@ -40,6 +40,7 @@ jobs:
           SANITIZED_BRANCH=$(echo -n "${{ github.ref_name }}" | tr '/' '-' | tr -c '[:alnum:]-' '-')
           echo sanitized_branch=$SANITIZED_BRANCH >> $GITHUB_OUTPUT
           echo image=$(make image) >> $GITHUB_OUTPUT
+          echo version=$(make version) >> $GITHUB_OUTPUT
 
       - name: Build and push image - release
         uses: docker/build-push-action@v6
@@ -47,6 +48,8 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           cache-from: ${{ steps.details.outputs.image }}:latest-build-cache
+          build-args:
+            VERSION=${{ steps.details.outputs.version }}
           tags: |
             ${{ steps.details.outputs.image }}:${{ steps.details.outputs.sanitized_branch }}
 
