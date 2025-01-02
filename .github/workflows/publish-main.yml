@@ -2,23 +2,12 @@ name: 🚀 publish
 
 on:
   push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+    branches:
+      - main
 
 jobs:
-  test_and_publish:
-    uses: ./.github/workflows/publish.yml
-    with:
-      # so easy to forget bumping the version to match the tag, just override it!
-      version: ${{ github.ref_name }}
-    secrets:
-      twine_username: ${{ secrets.PYPI_USERNAME }}
-      twine_password: ${{ secrets.PYPI_TOKEN }}
-
   build_image:
-    # TODO: remove this entire job if an image does not make sense (ie: just a library, no CLI)
     permissions: write-all
-    needs: test_and_publish
     name: release image
     runs-on: ubuntu-latest
     steps:
@@ -43,19 +32,28 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
       
+      - name: Gather details
+        id: details
+        run: |
+          echo image=$(make image) >> $GITHUB_OUTPUT
+          echo version=$(make version) >> $GITHUB_OUTPUT
+          echo pversion=$(make pversion) >> $GITHUB_OUTPUT
+      
       - name: Build and push image - release
         uses: docker/build-push-action@v6
         with:
           push: true
           platforms: linux/amd64,linux/arm64
-          cache-from: ghcr.io/${{ github.repository }}:latest-build-cache
-          cache-to: ghcr.io/${{ github.repository }}:latest-build-cache
+          cache-from: ${{ steps.details.outputs.image }}:latest-build-cache
+          cache-to: ${{ steps.details.outputs.image }}:latest-build-cache
           tags: |
-            ghcr.io/${{ github.repository }}:${{ github.ref_name }}
-            ghcr.io/${{ github.repository }}:latest
+            ${{ steps.details.outputs.image }}:${{ steps.details.outputs.version }}
+            ${{ steps.details.outputs.image }}:${{ steps.details.outputs.pversion }}
+            ${{ steps.details.outputs.image }}:latest
 
       - name: Show summary
         run: |
           echo 'Published:  ' >> ${GITHUB_STEP_SUMMARY}
-          echo '* `ghcr.io/${{ github.repository }}:${{ github.ref_name }}`' >> ${GITHUB_STEP_SUMMARY}
-          echo '* `ghcr.io/${{ github.repository }}:latest`' >> ${GITHUB_STEP_SUMMARY}
+          echo '* `${{ steps.details.outputs.image }}:${{ steps.details.outputs.pversion }}`' >> ${GITHUB_STEP_SUMMARY}
+          echo '* `${{ steps.details.outputs.image }}:${{ steps.details.outputs.version }}`' >> ${GITHUB_STEP_SUMMARY}
+          echo '* `${{ steps.details.outputs.image }}:latest`' >> ${GITHUB_STEP_SUMMARY}
