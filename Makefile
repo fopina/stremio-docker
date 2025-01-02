@@ -13,7 +13,7 @@ testup: serverjs
 	docker run --rm -p 11470:11470 $(IMAGE):serverjs
 
 version:
-	@cat Dockerfile | grep ^FROM | grep 'stremio/server:' | cut -d ':' -f2
+	@cat Dockerfile | grep ^FROM | grep 'stremio/server:' | cut -d ':' -f2 | cut -d ' ' -f1
 
 pversion:
 	@echo $(shell make version)-$(PATCH_VERSION)
