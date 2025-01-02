@@ -1,0 +1,10 @@
+--- server.js.4.20.10	2025-01-02 23:49:56.000000000 +0000
++++ server.js.4.20.10-new	2025-01-02 23:54:49.000000000 +0000
+@@ -43949,6 +43949,7 @@
+                 if ("TLSSocket" != socketConstructor) return next("Unknown protocol");
+                 protocol = "https://";
+             }
++            protocol = "https://";
+             var serverUrl = encodeURIComponent(protocol + req.headers.host), sep = webUILocation.includes("?") ? "&" : "?", location = webUILocation + sep + "streamingServer=" + serverUrl;
+             res.writeHead(307, {
+                 location: location

@@ -69,7 +69,7 @@ RUN cd && \
 #########################################################################
 
 # Main image
-FROM base AS final
+FROM base AS alldeps
 
 ARG VERSION=main
 LABEL org.opencontainers.image.source=https://github.com/fopina/stremio-docker
@@ -113,8 +113,6 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
   apk add --no-cache intel-media-driver; \
   fi
 
-COPY --from=serverjs /server.js ./
-
 ###
 # same settings as in https://github.com/Stremio/server-docker/blob/main/Dockerfile below
 ###
@@ -133,4 +131,7 @@ ENV NO_CORS=
 # See: https://github.com/Stremio/server-docker/issues/7
 ENV CASTING_DISABLED=1
 
+FROM alldeps
+
+COPY --from=serverjs /server.js ./
 ENTRYPOINT [ "/sbin/tini", "--", "node", "server.js" ]
