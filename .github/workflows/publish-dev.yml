@@ -34,7 +34,10 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
       
-      - name: Sanitize branch name
+      - name: server.js
+        run: make serverjs
+
+      - name: Gather details
         id: details
         run: |
           SANITIZED_BRANCH=$(echo -n "${{ github.ref_name }}" | tr '/' '-' | tr -c '[:alnum:]-' '-')
