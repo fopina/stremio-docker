@@ -1,6 +1,6 @@
 # "fake" stage to fetch latest server.js and have dependabot keep it up to date
 # always use same platform for caching
-FROM --platform=linux/amd64 stremio/server:v4.20.10 AS serverjs
+FROM --platform=linux/amd64 stremio/server:v4.20.11 AS serverjs
 
 # Base image
 FROM node:18-alpine3.18 AS base
