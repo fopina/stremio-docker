@@ -1,27 +1,20 @@
-name: 👷 publish dev
+name: 👷 build nondev
 
 on:
   push:
-    branches: 
+    branches-ignore: 
       - dev
       - dev/*
       - dev-*
+      - main
 
 jobs:
   build_image:
-    permissions: write-all
     name: test image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -37,23 +30,16 @@ jobs:
       - name: Gather details
         id: details
         run: |
-          SANITIZED_BRANCH=$(echo -n "${{ github.ref_name }}" | tr '/' '-' | tr -c '[:alnum:]-' '-')
-          echo sanitized_branch=$SANITIZED_BRANCH >> $GITHUB_OUTPUT
           echo image=$(make image) >> $GITHUB_OUTPUT
           echo version=$(make version) >> $GITHUB_OUTPUT
 
-      - name: Build and push image - release
+      - name: Build image
         uses: docker/build-push-action@v6
         with:
-          push: true
+          push: false
           platforms: linux/amd64,linux/arm64
           cache-from: ${{ steps.details.outputs.image }}:latest-build-cache
           build-args:
             VERSION=${{ steps.details.outputs.version }}
           tags: |
-            ${{ steps.details.outputs.image }}:${{ steps.details.outputs.sanitized_branch }}
-
-      - name: Show summary
-        run: |
-          echo 'Published:  ' >> ${GITHUB_STEP_SUMMARY}
-          echo '* `${{ steps.details.outputs.image }}:${{ steps.details.outputs.sanitized_branch }}`' >> ${GITHUB_STEP_SUMMARY}
+            ${{ steps.details.outputs.image }}:local
