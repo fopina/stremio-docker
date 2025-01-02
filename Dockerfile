@@ -79,6 +79,10 @@ LABEL version=${VERSION}
 
 WORKDIR /stremio
 
+# Copy ffmpeg
+COPY --from=ffmpeg /usr/bin/ffmpeg /usr/bin/ffprobe /usr/bin/
+COPY --from=ffmpeg /usr/lib/jellyfin-ffmpeg /usr/lib/
+
 # FIXME: official image does not install any of this, only tsaridas/stremio-docker - is it because of stremio-web?
 # Add libs
 RUN apk add --no-cache \
@@ -108,10 +112,6 @@ RUN apk add --no-cache \
 RUN if [ "$(uname -m)" = "x86_64" ]; then \
   apk add --no-cache intel-media-driver; \
   fi
-
-# Copy ffmpeg
-COPY --from=ffmpeg /usr/bin/ffmpeg /usr/bin/ffprobe /usr/bin/
-COPY --from=ffmpeg /usr/lib/jellyfin-ffmpeg /usr/lib/
 
 COPY --from=serverjs /server.js ./
 
