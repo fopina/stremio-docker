@@ -139,5 +139,5 @@ ENV CASTING_DISABLED=1
 
 FROM alldeps
 
-COPY --from=serverjs /server.js ./
+COPY --from=patched_serverjs /server.js ./
 ENTRYPOINT [ "/sbin/tini", "--", "node", "server.js" ]
