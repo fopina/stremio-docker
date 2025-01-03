@@ -4,11 +4,14 @@
 		  "dockerfile": "../Dockerfile",
       "target": "alldeps"
 	  },
+    "postCreateCommand": "apk add git vim",
     "customizations": {
       "vscode": {
         "extensions": [
           "esbenp.prettier-vscode",
-          "github.vscode-github-actions"
+          "github.vscode-github-actions",
+          "ms-azuretools.vscode-docker",
+          "ms-vscode.makefile-tools"
         ]
       }
     }

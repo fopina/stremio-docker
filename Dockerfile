@@ -14,6 +14,10 @@ ARG BUILD=desktop
 RUN apk add --no-cache curl
 RUN curl --fail -O https://dl.strem.io/server/${VERSION}/${BUILD}/server.js
 
+FROM serverjs AS patched_serverjs
+
+RUN patch server.js < patches/p1.patch
+
 FROM base AS ffmpeg
 
 # https://github.com/tsaridas/stremio-docker/blob/main/Dockerfile
