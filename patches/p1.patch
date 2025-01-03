@@ -1,10 +1,11 @@
---- server.js.4.20.10	2025-01-02 23:49:56.000000000 +0000
-+++ server.js.4.20.10-new	2025-01-02 23:54:49.000000000 +0000
-@@ -43949,6 +43949,7 @@
+--- server.clean.js	2025-01-03 00:09:20.000000000 +0000
++++ server.js	2025-01-03 00:20:47.000000000 +0000
+@@ -43938,6 +43938,8 @@
                  if ("TLSSocket" != socketConstructor) return next("Unknown protocol");
                  protocol = "https://";
              }
-+            protocol = "https://";
++            // override protocol if behind reverse proxy
++            if ("https" == req.headers["x-forward-proto"]) protocol = "https://";
              var serverUrl = encodeURIComponent(protocol + req.headers.host), sep = webUILocation.includes("?") ? "&" : "?", location = webUILocation + sep + "streamingServer=" + serverUrl;
              res.writeHead(307, {
                  location: location
