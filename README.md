@@ -13,5 +13,3 @@ All patches to `server.js` applied are in [patches](patches), each created with 
 ```
 diff -u server.clean.js server.js
 ```
-
-1. https://github.com/fopina/stremio-docker/pull/6
