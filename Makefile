@@ -1,5 +1,5 @@
 IMAGE := ghcr.io/fopina/stremio-server
-PATCH_VERSION := 0
+PATCH_VERSION := 1
 
 serverjs:
 	docker build -t $(IMAGE):serverjs --build-arg VERSION=$(shell make version) --target patched_serverjs .

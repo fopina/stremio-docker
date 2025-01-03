@@ -17,7 +17,8 @@ RUN curl --fail -O https://dl.strem.io/server/${VERSION}/${BUILD}/server.js
 FROM serverjs AS patched_serverjs
 
 RUN apk add --no-cache patch
-# empty for now
+COPY patches patches
+RUN patch server.js < patches/p1.patch
 
 FROM base AS ffmpeg
 
