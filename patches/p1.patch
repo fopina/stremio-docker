@@ -5,7 +5,7 @@
                  protocol = "https://";
              }
 +            // override protocol if behind reverse proxy
-+            if ("https" == req.headers["x-forward-proto"]) protocol = "https://";
++            if ("https" == req.headers["x-forwarded-proto"]) protocol = "https://";
              var serverUrl = encodeURIComponent(protocol + req.headers.host), sep = webUILocation.includes("?") ? "&" : "?", location = webUILocation + sep + "streamingServer=" + serverUrl;
              res.writeHead(307, {
                  location: location
