@@ -1,5 +1,5 @@
 # "fake" stage to have dependabot keep it up to date
-FROM stremio/server:v4.20.11 AS notused
+FROM stremio/server:v4.20.12 AS notused
 
 # Base image
 FROM node:18-alpine3.18 AS base
