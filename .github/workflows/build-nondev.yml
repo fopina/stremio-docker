@@ -43,3 +43,24 @@ jobs:
             VERSION=${{ steps.details.outputs.version }}
           tags: |
             ${{ steps.details.outputs.image }}:local
+      
+      - name: Rebuild and load image
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          load: true
+          cache-from: ${{ steps.details.outputs.image }}:latest-build-cache
+          build-args:
+            VERSION=${{ steps.details.outputs.version }}
+          tags: |
+            ${{ steps.details.outputs.image }}:local
+
+      - name: Test image
+        run: |
+          docker run -d -p 11470:11470 --name test-stremio-image ${{ steps.details.outputs.image }}:local
+          for i in {1..10}; do
+            curl http://localhost:11470 -v |& grep https://app.strem.io && exit 0
+            sleep 0.5
+          done
+          echo "No redirect??"
+          exit 1

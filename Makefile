@@ -11,11 +11,20 @@ cleanserverjs:
 
 test:
 	docker build -t $(IMAGE):local --build-arg VERSION=$(shell make version) .
-	docker run --rm -p 11470:11470 $(IMAGE):local
+	docker run --rm \
+			   -p 11470:11470 \
+			   --name test-stremio-image \
+			   $(IMAGE):local
 
 testup:
 	docker build -t $(IMAGE):testup --target notused .
-	docker run --rm -p 11470:11470 $(IMAGE):testup
+	docker run --rm \
+			   -p 11470:11470 \
+			   --name test-stremio-image \
+			   $(IMAGE):testup
+
+cleantest:
+	docker rm -f test-stremio-image
 
 version:
 	@cat Dockerfile | grep ^FROM | grep 'stremio/server:' | cut -d ':' -f2 | cut -d ' ' -f1
