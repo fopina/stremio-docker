@@ -1,5 +1,6 @@
 IMAGE := ghcr.io/fopina/stremio-server
 PATCH_VERSION := 1
+VERSION := $(shell grep '^FROM stremio/server:' Dockerfile | cut -d ':' -f2 | cut -d ' ' -f1)
 
 serverjs:
 	docker build -t $(IMAGE):serverjs --build-arg VERSION=$(shell make version) --target patched_serverjs .
@@ -27,10 +28,10 @@ cleantest:
 	docker rm -f test-stremio-image
 
 version:
-	@cat Dockerfile | grep ^FROM | grep 'stremio/server:' | cut -d ':' -f2 | cut -d ' ' -f1
+	@echo $(VERSION)
 
 pversion:
-	@echo $(shell make version)-$(PATCH_VERSION)
+	@echo $(VERSION)-$(PATCH_VERSION)
 
 image:
 	@echo $(IMAGE)
